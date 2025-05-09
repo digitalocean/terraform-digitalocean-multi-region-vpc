@@ -14,9 +14,9 @@ import (
 func TestVpcCreation(t *testing.T) {
 	t.Parallel()
 	uniqueId := random.UniqueId()
-	planFilePath := fmt.Sprintf(".terraform/test-plan.%s.out", uniqueId)
+	testDir := test_structure.CopyTerraformFolderToTemp(t, "..", ".")
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "..",
+		TerraformDir: testDir,
 		Vars: map[string]interface{}{
 			"name_prefix": uniqueId,
 			"vpcs": []map[string]interface{}{
@@ -35,7 +35,7 @@ func TestVpcCreation(t *testing.T) {
 			},
 		},
 		NoColor:      true,
-		PlanFilePath: planFilePath,
+		PlanFilePath: "plan.out",
 	})
 	plan := terraform.InitAndPlanAndShowWithStruct(t, terraformOptions)
 	nyc3_vpc := plan.ResourcePlannedValuesMap["digitalocean_vpc.vpc[\"vpc-0\"]"]
@@ -47,15 +47,14 @@ func TestVpcCreation(t *testing.T) {
 	ams3_vpc := plan.ResourcePlannedValuesMap["digitalocean_vpc.vpc[\"vpc-2\"]"]
 	assert.Equal(t, fmt.Sprintf("%s-ams3", uniqueId), ams3_vpc.AttributeValues["name"])
 	assert.Equal(t, "10.2.0.0/16", ams3_vpc.AttributeValues["ip_range"])
-	test_structure.CleanupTestData(t, fmt.Sprintf("../%s", planFilePath))
 }
 
 func TestVpcPeeringCreate(t *testing.T) {
 	t.Parallel()
 	uniqueId := random.UniqueId()
-	planFilePath := fmt.Sprintf(".terraform/test-plan.%s.out", uniqueId)
+	testDir := test_structure.CopyTerraformFolderToTemp(t, "..", ".")
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "..",
+		TerraformDir: testDir,
 		Vars: map[string]interface{}{
 			"name_prefix": uniqueId,
 			"vpcs": []map[string]interface{}{
@@ -78,7 +77,7 @@ func TestVpcPeeringCreate(t *testing.T) {
 			},
 		},
 		NoColor:      true,
-		PlanFilePath: planFilePath,
+		PlanFilePath: "plan.out",
 	})
 	plan := terraform.InitAndPlanAndShowWithStruct(t, terraformOptions)
 	vpc_peering_count := 0
@@ -88,23 +87,21 @@ func TestVpcPeeringCreate(t *testing.T) {
 		}
 	}
 	assert.Equal(t, 6, vpc_peering_count)
-	test_structure.CleanupTestData(t, fmt.Sprintf("../%s", planFilePath))
 }
 
 func TestFailIfNoVpcInput(t *testing.T) {
 	t.Parallel()
 	uniqueId := random.UniqueId()
-	planFilePath := fmt.Sprintf(".terraform/test-plan.%s.out", uniqueId)
+	testDir := test_structure.CopyTerraformFolderToTemp(t, "..", ".")
 	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
-		TerraformDir: "..",
+		TerraformDir: testDir,
 		Vars: map[string]interface{}{
 			"name_prefix": uniqueId,
 			"vpcs":        []map[string]interface{}{},
 		},
 		NoColor:      true,
-		PlanFilePath: planFilePath,
+		PlanFilePath: "plan.out",
 	})
 	_, err := terraform.InitAndPlanAndShowWithStructE(t, terraformOptions)
 	require.Error(t, err)
-	test_structure.CleanupTestData(t, fmt.Sprintf("../%s", planFilePath))
 }
