@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:
       - '**/*.tf'
-      - 'test/*'
 
 jobs:
   terraform-check:
@@ -53,13 +52,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Skip if test folder is missing
-        run: |
-          if [ ! -d "test" ]; then
-            echo "No tests to run. Skipping."
-            exit 0
-          fi
-
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
@@ -74,4 +66,9 @@ jobs:
           mv terraform /usr/local/bin
 
       - name: Run unit tests
-        run: cd test && go test ./...
+        run: |
+          if [ -d "test" ]; then
+            cd test && go test ./...
+          else
+            echo "No tests to run."
+          fi
