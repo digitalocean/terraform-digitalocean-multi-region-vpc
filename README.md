@@ -4,7 +4,7 @@ This module creates two or more VPCs in a fully meshed peering configuration.
 # Example
 ```terraform
 module "vpc" {
-  source      = "git@github.com:digitalocean/terraform-digitalocean-multi-region-vpc.git"
+  source      = "github.com/digitalocean/terraform-digitalocean-multi-region-vpc"
   name_prefix = "prod"
   vpcs = [
     {
