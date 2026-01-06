@@ -1,3 +1,14 @@
+> [!WARNING]
+> ## This repository is deprecated
+>
+> This module has been consolidated into the [scale-with-simplicity](https://github.com/digitalocean/scale-with-simplicity) repository.
+>
+> **New location:** [modules/multi-region-vpc](https://github.com/digitalocean/scale-with-simplicity/tree/main/modules/multi-region-vpc)
+>
+> This repository will be archived. Please update your module references to use the new location.
+
+---
+
 # terraform-digitalocean-multi-region-vpc
 This module creates two or more VPCs in a fully meshed peering configuration.
 
